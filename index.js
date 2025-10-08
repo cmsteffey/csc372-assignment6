@@ -1,5 +1,4 @@
 ﻿async function loadProfile(username) {
-    //Fine grain PAT with only readonly access to only public spaces.
     let options = window.getPat ? {headers: {Authorization: `token ${getPat()}`}} : {};
 
     let reposResponse = await fetch("https://api.github.com/users/" + username + "/repos", options);
@@ -13,6 +12,10 @@
     for(let repo of repos){
         let repoElement = document.createElement("div");
         repoElement.classList.add("repo");
+        let ghImage = document.createElement("img");
+        ghImage.src = "images/gh.png";
+        ghImage.style.aspectRatio = "1/1";
+        ghImage.style.width = "16px"
         let repoTitleElement = document.createElement("a");
         repoTitleElement.href = repo.html_url;
         repoTitleElement.classList.add("repo-title");
@@ -55,6 +58,7 @@
 
         }).catch(_=> {languagesElement.innerText = "Language lookup error";});
         repoElement.append(
+            ghImage,
             repoTitleElement,
             repoDescriptionElement,
             repoCreationDateElement,
@@ -66,4 +70,14 @@
 
     }
 }
+function clearAndLoadInput(){
+    let search = document.getElementById("search");
+    loadProfile(search.value);
+    search.value = "";
+}
 loadProfile("cmsteffey");
+document.getElementById("searchButton").addEventListener("click", clearAndLoadInput);
+document.getElementById("search").addEventListener("keypress", (e)=>{
+    if(e.keyCode === 13 || e.key === 'Enter')
+        clearAndLoadInput();
+})

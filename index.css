@@ -29,3 +29,13 @@
 .repo-description, .repo-title, .repo-text-item{
     color: #BBB;
 }
+#search {
+    appearance: none;
+    border: 2px #3d444d solid;
+    border-radius: 3px;
+    background-color: #151b23;
+
+}
+#search::placeholder {
+    color: #9198a1;
+}
