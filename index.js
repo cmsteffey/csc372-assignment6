@@ -45,7 +45,7 @@
         let commitsElement = document.createElement("p");
         commitsElement.classList.add("repo-text-item");
         commitsElement.innerText = "Loading commits...";
-        fetch(repo.commits_url.substring(0, repo.commits_url.indexOf("{")) + "?per_page=1").then(r=> {
+        fetch(repo.commits_url.substring(0, repo.commits_url.indexOf("{")) + "?per_page=1", options).then(r=> {
             console.log(r.headers.get("link"))
             commitsElement.textContent = "Commits: " + (r.status === 409 ? 0 : r.headers.get("link").split(",").find(x=>x.split(";")[1]
                 .includes("last")).split(';')[0].match(/[?&]page=(?<pgnum>\d+)/).groups["pgnum"]);
