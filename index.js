@@ -25,8 +25,8 @@
         if(repo.description == null){
             repoDescriptionElement.classList.add("null");
         }
-        repoDescriptionElement.textContent = (repo.description?.length ?? 0) > 200 ?
-            repo.description.substring(0, 197) + "..." : repo.description;
+        repoDescriptionElement.textContent = (repo.description?.length ?? 0) > 120 ?
+            repo.description.substring(0, 117) + "..." : repo.description;
 
         let repoCreationDateElement = document.createElement("p");
         repoCreationDateElement.classList.add("repo-text-item");
@@ -42,6 +42,14 @@
         let languagesElement = document.createElement("p");
         languagesElement.classList.add("repo-text-item");
         languagesElement.innerText = "Loading languages...";
+        let commitsElement = document.createElement("p");
+        commitsElement.classList.add("repo-text-item");
+        commitsElement.innerText = "Loading commits...";
+        fetch(repo.commits_url.substring(0, repo.commits_url.indexOf("{")) + "?per_page=1").then(r=> {
+            console.log(r.headers.get("link"))
+            commitsElement.textContent = "Commits: " + (r.status === 409 ? 0 : r.headers.get("link").split(",").find(x=>x.split(";")[1]
+                .includes("last")).split(';')[0].match(/[?&]page=(?<pgnum>\d+)/).groups["pgnum"]);
+        });
         fetch(repo.languages_url, options).then(languagesResponse => languagesResponse.json()).then(languages=>{
             let total = 0;
             let languageMap = new Map();
@@ -53,7 +61,7 @@
                 }
             }
             console.log(languageMap);
-            languagesElement.innerText = Array.from(languageMap.entries()).sort((a, b) => -(a[1] - b[1]))
+            languagesElement.innerText = languageMap.size === 0 ? "No languages" : Array.from(languageMap.entries()).sort((a, b) => -(a[1] - b[1]))
                 .map(languageEntry => languageEntry[0] + ": " + Math.round(languageEntry[1] * 1000 / total) / 10 + "%" ).join(", ");
 
         }).catch(_=> {languagesElement.innerText = "Language lookup error";});
@@ -65,6 +73,7 @@
             repoModificationDateElement,
             repoWatchersElement,
             languagesElement,
+            commitsElement
         );
         repoContainerElement.append(repoElement);
 
